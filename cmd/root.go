@@ -1,11 +1,13 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strconv"
 
 	"github.com/spf13/cobra"
+	"github.com/zcking/gftp/shell"
 )
 
 var (
@@ -33,11 +35,27 @@ func init() {
 func run(cmd *cobra.Command, args []string) {
 	conn, err := parseHostAndPort(args)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		exit(err)
 	}
 
-	fmt.Fprintf(os.Stdout, "connecting to %s:%d ...\n", conn.host, conn.port)
+	fmt.Fprintf(os.Stdout, "connecting to %s:%d ...\n", conn.host, conn.port) // TODO: establish connection over TCP
+
+	reader := bufio.NewReader(os.Stdin)
+
+	for {
+		shell.PrintPrompt()
+		comm, err := shell.ReadLine(reader)
+		if err != nil {
+			exit(err)
+		}
+		fmt.Printf("'%v' command not implemented\n", comm)
+		shell.Newline()
+	}
+}
+
+func exit(err error) {
+	fmt.Fprintln(os.Stderr, err)
+	os.Exit(1)
 }
 
 // parseHostAndPort parses the last two arguments
