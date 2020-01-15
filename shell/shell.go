@@ -28,3 +28,13 @@ func PrintPrompt() {
 func Newline() {
 	fmt.Printf("\n")
 }
+
+// PrintString prints a string to the shell
+func PrintString(s string) {
+	fmt.Println(s)
+}
+
+// Print prints interfaces to the shell
+func Print(a ...interface{}) {
+	fmt.Print(a...)
+}
