@@ -18,6 +18,7 @@ var (
 		Short: "gFTP is a simple FTP and SFTP client",
 		Long:  "gFTP is a simple FTP and SFTP client written in Go",
 		Run:   run,
+		Args:  cobra.MinimumNArgs(1),
 	}
 )
 
@@ -30,7 +31,7 @@ func init() {
 }
 
 func run(cmd *cobra.Command, args []string) {
-	target, err := client.NewDestination(args)
+	target, err := client.NewDestination(args[len(args)-1])
 	if err != nil {
 		exit(err)
 	}

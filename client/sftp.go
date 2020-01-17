@@ -30,15 +30,15 @@ func getHostKeyCallback(host string) (ssh.HostKeyCallback, error) {
 
 // Connect establishes a TCP connection with a host
 func (sftp *SFTP) Connect(target *Destination) error {
-	hostKeyCallback, err := getHostKeyCallback(target.host)
+	hostKeyCallback, err := getHostKeyCallback(target.Host)
 	if err != nil {
 		return err
 	}
 
 	sshConfig := &ssh.ClientConfig{
-		User: os.Getenv("GFTP_USER"), // TODO: parameterize
+		User: target.User,
 		Auth: []ssh.AuthMethod{
-			ssh.Password(os.Getenv("GFTP_PASS")), // TODO: parameterize
+			ssh.Password(target.Pass), // TODO: parameterize
 		},
 		HostKeyCallback: hostKeyCallback,
 	}
