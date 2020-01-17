@@ -53,11 +53,11 @@ func run(cmd *cobra.Command, args []string) {
 		comm, err := commands.ParseCommand(rawInput)
 		if err != nil {
 			shell.Print(err)
-		}
-
-		// Execute the parsed command
-		if comm != nil {
-			comm.Execute(sftp)
+		} else {
+			// Execute the parsed command
+			if comm != nil {
+				comm.Execute(sftp)
+			}
 		}
 	}
 }

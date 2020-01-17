@@ -5,9 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"golang.org/x/crypto/ssh/knownhosts"
-
 	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/knownhosts"
 )
 
 // SFTP is a connection wrapper for a SFTP network connection
@@ -52,6 +51,8 @@ func (sftp *SFTP) Connect(target *Destination) error {
 }
 
 func (sftp *SFTP) session() (*ssh.Session, error) {
+	// TODO: refactor to re-use same session, but will need to manage stdin/stdout etc.
+	// https://stackoverflow.com/a/32238929
 	return sftp.conn.NewSession()
 }
 

@@ -24,12 +24,7 @@ func ParseCommand(raw string) (Command, error) {
 
 	switch comm {
 	case "ls":
-		if len(tokens) >= 2 {
-			return &LsCommand{path: tokens[1]}, nil
-		}
-
-		return &LsCommand{path: "./"}, nil
-
+		return &LsCommand{raw: raw}, nil
 	case "bye":
 		return &ByeCommand{}, nil
 	default:
