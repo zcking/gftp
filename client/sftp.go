@@ -35,7 +35,7 @@ func (sftp *SFTP) Connect(target *Destination) error {
 	sshConfig := &ssh.ClientConfig{
 		User: target.User,
 		Auth: []ssh.AuthMethod{
-			ssh.Password(target.Pass), // TODO: parameterize
+			ssh.Password(target.Pass),
 		},
 		HostKeyCallback: hostKeyCallback,
 	}
