@@ -12,8 +12,7 @@ import (
 // Client is a FTP or SFTP wrapper
 type Client interface {
 	Connect(*Destination) error
-	SendString(string) error
-	RecvString() (string, error)
+	RunString(string) ([]byte, error)
 	Close() error
 }
 

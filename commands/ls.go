@@ -17,12 +17,11 @@ type LsCommand struct {
 // and receives the listing resopnse
 func (c *LsCommand) Execute(cli client.Client) error {
 	payload := fmt.Sprintf("ls %v\n", c.path)
-	cli.SendString(payload)
-	resp, err := cli.RecvString()
+	resp, err := cli.RunString(payload)
 	if err != nil {
 		return err
 	}
 
-	shell.PrintString(resp)
+	shell.PrintString(string(resp))
 	return nil
 }

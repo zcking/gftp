@@ -1,8 +1,6 @@
 package client
 
 import (
-	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -13,10 +11,7 @@ import (
 
 // SFTP is a connection wrapper for a SFTP network connection
 type SFTP struct {
-	conn    *ssh.Client
-	session *ssh.Session
-	stdout  io.Reader
-	stdin   io.WriteCloser
+	conn *ssh.Client
 }
 
 func getHostKeyCallback(host string) (ssh.HostKeyCallback, error) {
@@ -48,47 +43,24 @@ func (sftp *SFTP) Connect(target *Destination) error {
 		return err
 	}
 	sftp.conn = connection
-	session, err := connection.NewSession()
-	if err != nil {
-		return err
-	}
-	sftp.session = session
-
-	stdout, err := session.StdoutPipe()
-	if err != nil {
-		return err
-	}
-	sftp.stdout = stdout
-	stdin, err := session.StdinPipe()
-	if err != nil {
-		return err
-	}
-	sftp.stdin = stdin
 
 	return nil
 }
 
-// SendString writes a string payload to the server
-func (sftp *SFTP) SendString(payload string) error {
-	return sftp.session.Run(payload)
+func (sftp *SFTP) session() (*ssh.Session, error) {
+	return sftp.conn.NewSession()
 }
 
-// RecvString receives a string from the server stdout
-func (sftp *SFTP) RecvString() (string, error) {
-	bytes, err := ioutil.ReadAll(sftp.stdout)
+// RunString writes a string payload to the server
+func (sftp *SFTP) RunString(payload string) ([]byte, error) {
+	sh, err := sftp.session()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(bytes), nil
+	return sh.Output(payload)
 }
 
 // Close disconnects the SFTP connection
 func (sftp *SFTP) Close() error {
-	if err := sftp.stdin.Close(); err != nil {
-		return err
-	}
-	if err := sftp.session.Close(); err != nil {
-		return err
-	}
 	return sftp.conn.Close()
 }
