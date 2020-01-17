@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/zcking/gftp/shell"
 
@@ -22,6 +23,7 @@ func (c *LsCommand) Execute(cli client.Client) error {
 		return err
 	}
 
-	shell.PrintString(string(resp))
+	listings := strings.Split(string(resp), "\n")
+	shell.PrintString(strings.Join(listings, "    "))
 	return nil
 }

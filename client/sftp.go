@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -11,7 +12,8 @@ import (
 
 // SFTP is a connection wrapper for a SFTP network connection
 type SFTP struct {
-	conn *ssh.Client
+	conn        *ssh.Client
+	isConnected bool
 }
 
 func getHostKeyCallback(host string) (ssh.HostKeyCallback, error) {
@@ -43,6 +45,8 @@ func (sftp *SFTP) Connect(target *Destination) error {
 		return err
 	}
 	sftp.conn = connection
+	sftp.isConnected = true
+	fmt.Printf("Connected to %s.\n", target.Host)
 
 	return nil
 }
@@ -62,5 +66,12 @@ func (sftp *SFTP) RunString(payload string) ([]byte, error) {
 
 // Close disconnects the SFTP connection
 func (sftp *SFTP) Close() error {
+	sftp.isConnected = false
 	return sftp.conn.Close()
+}
+
+// IsConnected returns whether or not the SFTP
+// connection is established
+func (sftp *SFTP) IsConnected() bool {
+	return sftp.isConnected
 }

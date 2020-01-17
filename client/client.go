@@ -14,6 +14,7 @@ type Client interface {
 	Connect(*Destination) error
 	RunString(string) ([]byte, error)
 	Close() error
+	IsConnected() bool
 }
 
 // Destination is the target server
@@ -41,8 +42,9 @@ func parseHostAndPath(s string) (string, string) {
 // inputPassword prompt the username@host's password
 // and returns the input as a string
 func inputPassword(username string, host string) (string, error) {
-	fmt.Printf("%s@%s's password: \n", username, host)
+	fmt.Printf("%s@%s's password: ", username, host)
 	bytePassword, err := terminal.ReadPassword(syscall.Stdin)
+	fmt.Printf("\n")
 	if err != nil {
 		return "", err
 	}

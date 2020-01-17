@@ -44,7 +44,7 @@ func run(cmd *cobra.Command, args []string) {
 
 	reader := bufio.NewReader(os.Stdin)
 
-	for {
+	for sftp.IsConnected() {
 		shell.PrintPrompt()
 		rawInput, err := shell.ReadLine(reader)
 		if err != nil {

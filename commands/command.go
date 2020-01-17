@@ -15,12 +15,13 @@ type Command interface {
 // ParseCommand parses a raw user input into
 // a gFTP command, if valid
 func ParseCommand(raw string) (Command, error) {
-	tokens := strings.Split(raw, " ")
-	if len(tokens) == 0 || raw == "" {
+	if raw == "" {
 		return nil, fmt.Errorf("")
 	}
 
+	tokens := strings.SplitN(raw, " ", 2)
 	comm := strings.ToLower(tokens[0])
+
 	switch comm {
 	case "ls":
 		if len(tokens) >= 2 {
@@ -29,6 +30,8 @@ func ParseCommand(raw string) (Command, error) {
 
 		return &LsCommand{path: "./"}, nil
 
+	case "bye":
+		return &ByeCommand{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported command '%v'\n", comm)
 	}
