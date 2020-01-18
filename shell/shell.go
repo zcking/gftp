@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	prompt = "gftp> "
+	prompt = "gsh# "
 )
 
 // ReadLine reads a line of input (input until a newline) from a reader
@@ -19,7 +19,7 @@ func ReadLine(r *bufio.Reader) (string, error) {
 	return strings.TrimSpace(input), nil
 }
 
-// PrintPrompt outputs the gftp prompt for input
+// PrintPrompt outputs the gsh prompt for input
 func PrintPrompt() {
 	fmt.Print(prompt)
 }

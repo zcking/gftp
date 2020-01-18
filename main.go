@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/zcking/gftp/cmd"
+	"github.com/zcking/gsh/cmd"
 )
 
 func main() {

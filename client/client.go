@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-// Client is a FTP or SFTP wrapper
+// Client is a SSH client interface
 type Client interface {
 	Connect(*Destination) error
 	RunString(string) error
@@ -51,7 +51,7 @@ func inputPassword(username string, host string) (string, error) {
 	return string(bytePassword), nil
 }
 
-// NewDestination parses the required argument of gFTP
+// NewDestination parses the required argument 
 // which must be [user@]host[:path]
 func NewDestination(destStr string) (*Destination, error) {
 	var serverUser string

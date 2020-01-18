@@ -5,18 +5,17 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/zcking/gftp/client"
-	"github.com/zcking/gftp/commands"
+	"github.com/zcking/gftp/shell"
+	"github.com/zcking/gsh/client"
 
 	"github.com/spf13/cobra"
-	"github.com/zcking/gftp/shell"
 )
 
 var (
 	rootCmd = &cobra.Command{
-		Use:   "gftp",
-		Short: "gFTP is a simple FTP and SFTP client",
-		Long:  "gFTP is a simple FTP and SFTP client written in Go",
+		Use:   "gsh",
+		Short: "gsh is a simple SSH client",
+		Long:  "gsh is a simple SSH client written in Go",
 		Run:   run,
 		Args:  cobra.MinimumNArgs(1),
 	}
@@ -37,24 +36,26 @@ func run(cmd *cobra.Command, args []string) {
 	}
 
 	// Establish connection with Client
-	sftp := &client.SFTP{}
-	if err = sftp.Connect(target); err != nil {
+	ssh := &client.GShell{}
+	if err = ssh.Connect(target); err != nil {
 		exit(err)
 	}
 
 	reader := bufio.NewReader(os.Stdin)
 
-	for sftp.IsConnected() {
+	for ssh.IsConnected() {
 		shell.PrintPrompt()
 		rawInput, err := shell.ReadLine(reader)
 		if err != nil {
 			exit(err)
 		}
-    comm, err := commands.ParseCommand(rawInput)
-    if err != nil {
-      shell.Print(err)
-    } else {
-      comm.Execute(sftp)
+
+		if rawInput == "exit" {
+			ssh.Close()
+		} else {
+			if err = ssh.RunString(rawInput); err != nil {
+				exit(err)
+			}
 		}
 	}
 }
