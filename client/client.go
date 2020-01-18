@@ -12,7 +12,7 @@ import (
 // Client is a FTP or SFTP wrapper
 type Client interface {
 	Connect(*Destination) error
-	RunString(string) ([]byte, error)
+	RunString(string) error
 	Close() error
 	IsConnected() bool
 }

@@ -25,6 +25,10 @@ func ParseCommand(raw string) (Command, error) {
 	switch comm {
 	case "ls":
 		return &LsCommand{raw: raw}, nil
+  case "cd":
+    return &CdCommand{raw: raw}, nil
+  case "pwd":
+    return &PwdCommand{}, nil
 	case "bye":
 		return &ByeCommand{}, nil
 	default:

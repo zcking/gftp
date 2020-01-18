@@ -50,14 +50,11 @@ func run(cmd *cobra.Command, args []string) {
 		if err != nil {
 			exit(err)
 		}
-		comm, err := commands.ParseCommand(rawInput)
-		if err != nil {
-			shell.Print(err)
-		} else {
-			// Execute the parsed command
-			if comm != nil {
-				comm.Execute(sftp)
-			}
+    comm, err := commands.ParseCommand(rawInput)
+    if err != nil {
+      shell.Print(err)
+    } else {
+      comm.Execute(sftp)
 		}
 	}
 }

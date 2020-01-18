@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+  "io"
 	"os"
 	"path/filepath"
 
@@ -13,6 +14,8 @@ import (
 type SFTP struct {
 	conn        *ssh.Client
 	isConnected bool
+  session     *ssh.Session
+  stdin       io.WriteCloser
 }
 
 func getHostKeyCallback(host string) (ssh.HostKeyCallback, error) {
@@ -31,6 +34,8 @@ func (sftp *SFTP) Connect(target *Destination) error {
 		return err
 	}
 
+  // Configure the SSH client for connecting
+  // TODO: allow connecting w/ SSH key instead of password
 	sshConfig := &ssh.ClientConfig{
 		User: target.User,
 		Auth: []ssh.AuthMethod{
@@ -39,6 +44,7 @@ func (sftp *SFTP) Connect(target *Destination) error {
 		HostKeyCallback: hostKeyCallback,
 	}
 
+  // Connect to the remote machine via SSH
 	connection, err := ssh.Dial("tcp", target.String(), sshConfig)
 	if err != nil {
 		return err
@@ -47,28 +53,44 @@ func (sftp *SFTP) Connect(target *Destination) error {
 	sftp.isConnected = true
 	fmt.Printf("Connected to %s.\n", target.Host)
 
-	return nil
+  // Start a new SSH session with the remote machine
+  // which will be used for all command execution
+  sftp.session, err = sftp.newSession()
+  if err != nil {
+    return err
+  }
+
+  // Get STDIN handle to be able to pass commands to remote
+  sftp.stdin, err = sftp.session.StdinPipe()
+  if err != nil {
+    return err
+  }
+
+  sftp.session.Stdout = os.Stdout
+
+  // Shell() starts a login shell on the remote machine
+	return sftp.session.Shell()
 }
 
-func (sftp *SFTP) session() (*ssh.Session, error) {
-	// TODO: refactor to re-use same session, but will need to manage stdin/stdout etc.
-	// https://stackoverflow.com/a/32238929
+func (sftp *SFTP) newSession() (*ssh.Session, error) {
 	return sftp.conn.NewSession()
 }
 
 // RunString writes a string payload to the server
-func (sftp *SFTP) RunString(payload string) ([]byte, error) {
-	sh, err := sftp.session()
-	if err != nil {
-		return nil, err
-	}
-	return sh.Output(payload)
+func (sftp *SFTP) RunString(payload string) error {
+  // send the command to the remote machine
+  sftp.stdin.Write([]byte(payload + "\n"))
+  return nil
 }
 
 // Close disconnects the SFTP connection
 func (sftp *SFTP) Close() error {
 	sftp.isConnected = false
-	return sftp.conn.Close()
+  if err := sftp.stdin.Close(); err != nil {
+    return err
+  }
+  sftp.session.Close()      // close the SSH sesssion
+	return sftp.conn.Close()  // close the TCP connection
 }
 
 // IsConnected returns whether or not the SFTP
