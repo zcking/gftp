@@ -13,6 +13,7 @@ concepts I haven't necessarily dove into in the past.
 To build GSH from source, run the following Go command:
 
 ```
+go get -u github.com/zcking/gsh
 go install github.com/zcking/gsh
 ```
 
